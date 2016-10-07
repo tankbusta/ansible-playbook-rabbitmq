@@ -1,20 +1,23 @@
 ---
 - name: enable plugins
   rabbitmq_plugin:
-    names={{ rabbitmq_plugins | join(',') }}
-    new_only={{ rabbitmq_new_only }}
+    names={{ item }}
+    new_only="{{ rabbitmq_new_only }}"
   notify: restart rabbitmq-server
-  when: rabbitmq_plugins != []
+  with_items: "{{ rabbitmq_plugins }}"
 
-- name: get the list of active plugins to disable
-  command: rabbitmq-plugins list -e -m
-  register: result
-  when: rabbitmq_plugins == []
+# XXX(cschmitt): This is VERY bad because RMQ has default plugins that are loaded and shouldn't be removed.
 
-- name: disable plugins if none added in the configuration
-  rabbitmq_plugin:
-    name={{ item }}
-    state=disabled
-  notify: restart rabbitmq-server
-  with_items: "{{ result.stdout_lines }}"
-  when: rabbitmq_plugins == []
+# - name: get the list of active plugins to disable
+#  command: rabbitmq-plugins list -e -m
+#  register: result
+#  when: rabbitmq_plugins == []
+
+
+#- name: disable plugins if none added in the configuration
+#  rabbitmq_plugin:
+#    name={{ item }}
+#    state=disabled
+#  notify: restart rabbitmq-server
+#  with_items: "{{ result.stdout_lines }}"
+#  when: rabbitmq_plugins == []
