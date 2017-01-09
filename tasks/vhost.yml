@@ -22,6 +22,7 @@
     write_priv={{ item.write_priv | default('.*') }}
     state=present
     force={{ item.force|default('yes') }}
+    permissions={{ item.permissions | default('[]') }}
   with_items: "{{ rabbitmq_users_definitions }}"
 
 - name: remove guest user (hostname)
